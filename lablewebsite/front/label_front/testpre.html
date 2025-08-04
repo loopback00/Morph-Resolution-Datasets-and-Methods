@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/video-js.min.css"/>
+    <script src="src/axios.js"></script>
+    <script type="text/javascript" src="src/video.min.js"></script>
+    <script type="text/javascript" src="src/vue-video-player.js"></script>
+    <script src="//unpkg.com/element-ui@2.15.14/lib/index.js"></script>
+    <script type="text/javascript" src="src/xlsx.js"></script>
+    <title>变体词标注</title>
+</head>
+<body>
+    
+    <div id="app">
+        <el-row>
+            <div style="height: 20px;">&nbsp;</div>
+            <el-progress type="circle" :percentage="parseFloat(((this.index / 12360).toFixed(2))) * 100"></el-progress>
+        </el-row>
+
+      
+      
+    </div>
+    
+</body>
+<link rel="stylesheet" href="./element/element.css">
+<script src="./element/vue.js"></script>
+<script src="./element/element.js"></script>
+<script>
+    Vue.use(window.VueVideoPlayer)
+    new Vue({
+        el:"#app",
+        data:{
+            index:1320,
+
+      
+        }
+    })
+    
+
+
+</script>
+</html>

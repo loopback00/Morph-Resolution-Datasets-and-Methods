@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/video-js.min.css"/>
+    <script src="src/axios.js"></script>
+    <script src="src/vue.js"></script>
+    <script type="text/javascript" src="src/video.min.js"></script>
+    <script type="text/javascript" src="src/vue-video-player.js"></script>
+    <script src="//unpkg.com/element-ui@2.15.14/lib/index.js"></script>
+    <script type="text/javascript" src="src/xlsx.js"></script>
+    <title>user_register</title>
+</head>
+<body>
+    <div id="app">
+        <el-container style="height: 80%; border: 1px solid #eee">
+            <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+              <el-menu :default-openeds="['1', '3']">
+                <el-submenu index="1">
+                  <template slot="title"><i class="el-icon-caret-bottom"></i>功能选择</template>
+                  <el-menu-item-group>
+                   
+                    <el-menu-item index="1-1" @click="jump2practice">线索浏览(非标注)</el-menu-item>
+                    <el-menu-item index="1-2" @click="jump2label">开始标注</el-menu-item>
+                    <el-menu-item index="1-3">查看已标注(开发中)</el-menu-item>
+                    </el-menu-item-group>    
+                 </el-menu>
+            </el-aside>
+            
+            <el-container>
+              <el-header style="text-align: right; font-size: 12px">
+                <el-dropdown>
+                  <i class="el-icon-setting" style="margin-right: 15px"></i>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item>返回登录</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+                <span>{{this.user_name}}</span>
+              </el-header>
+              
+              <el-main>
+              
+                <h4 style="padding:  30px;"> 背景 <br>
+                  在网络直播带货的过程中，某些商品可能涉及敏感词汇或被平台限制词汇，直播内容可能会受到法规或平台规则的限制，为了避免平台的自动审查系统对某些敏感或限制性词汇的过滤，同时也为了确保信息能顺畅传达到每一位观众，主播必须在言辞之间找到平衡，主播和商家经常诉诸于一种特殊的语言策略：使用变体词。变体词就是网络语言作为一种不规范语言的显著特色，人们往往出于避免审查、表达情感、讽刺、娱乐等需求将相对严肃、规范、敏感的词用相对不规范、不敏感的词来代替，用来代替原来词的新词就叫做变体词。这些变体词虽然在听觉上或视觉上与原词相似，但却能够巧妙地避开自动审查系统的识别,不触碰到平台的红线,这种做法有时也被称为“打擦边球”。
+                 <br> <br>
+                  变体词类型 <br>
+                 结构变体词汇 : 变体词汇：某诊某所 原词：诊所 ;  &nbsp;  &nbsp;  &nbsp;变体词汇：临某床 原词：临床 ; &nbsp;  &nbsp;  &nbsp; 变体词汇：肠胃 原词：小肠小胃 ;
+                  <br>
+                  音形变体词汇 : 变体词汇：k糖 原词：抗糖 ;  &nbsp;  &nbsp;  &nbsp;变体词汇：k老 原词：抗老 ; 
+                  <br>
+                  语义变体词汇 : 变体词汇：白褂褂/白衣服的人 原词：医生 ;  &nbsp;  &nbsp;  &nbsp;变体词汇：火火症 原词：炎症 ; &nbsp;  &nbsp;  &nbsp; 变体词汇：红色管道 原词：红色管道 ;
+                  <br> <br>
+                  标注格式 <br>
+                  变体词1：原词1，变体词2：原词2，变体词3：原词3 (: , ;中英文字符任意)
+                  <br>
+                  无
+                  
+                 
+                 
+                </h4>
+                <p>
+                </p>
+                <p>
+                </p>
+              </el-main>
+            </el-container>
+          </el-container>
+        
+        
+    </div>
+    
+</body>
+<link rel="stylesheet" href="./element/element.css">
+<script src="./element/vue.js"></script>
+<script src="./element/element.js"></script>
+<script>
+    new Vue({
+        el:"#app",
+        data:{
+            user_name:sessionStorage.getItem("username"),
+            form: {
+            username: '',
+            password: ''
+      }
+
+        },
+        methods: {
+            onSubmit() {
+              alert("正在开发中")
+      
+      // 这里可以添加登录逻辑，例如发送请求到服务器验证用户信息
+    },
+    jump2practice(){
+        axios.get("http://127.0.0.1:5000/getindex_visitor",{
+            params:{s1:this.user_name}
+          })
+          .then((response) =>{
+             
+            sessionStorage.setItem("label_videopath",response.data[0]);
+
+           
+            sessionStorage.setItem("label_asrresult",response.data[1]);
+            sessionStorage.setItem("label_label",response.data[2]);
+            sessionStorage.setItem("label_index",response.data[3]);
+            window.location.href = 'visit.html';
+           
+            
+
+           
+           
+          })
+          .catch((error) =>{
+            alert("Error!")
+            console.error(error);
+          })
+
+     
+      
+
+   
+    },
+    jump2label(){
+      axios.get("http://127.0.0.1:5000/getindex",{
+            params:{s1:this.user_name}
+          })
+          .then((response) =>{
+             
+            sessionStorage.setItem("label_videopath",response.data[0]);
+
+           
+            sessionStorage.setItem("label_asrresult",response.data[1]);
+            sessionStorage.setItem("label_label",response.data[2]);
+            sessionStorage.setItem("label_index",response.data[3]);
+            window.location.href = 'index_1.html';
+           
+            
+
+           
+           
+          })
+          .catch((error) =>{
+            alert("Error!")
+            console.error(error);
+          })
+
+
+    }
+  }
+    })
+
+</script>
+<style>
+    .el-header {
+      background-color: #B3C0D1;
+      color: #333;
+      line-height: 60px;
+    }
+    
+    .el-aside {
+      color: #333;
+    }
+  </style>
+  
+
+
+</html>

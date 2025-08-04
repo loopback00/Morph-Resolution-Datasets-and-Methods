@@ -1,0 +1,22 @@
+[
+   {
+      "username":"admin1",
+      "last_label_index_final":-1,
+      "last_label_index_test":1
+   },
+   {
+      "username":"admin2",
+      "last_label_index_final":-1,
+      "last_label_index_test":-1
+   },
+   {
+      "username":"admin3",
+      "last_label_index_final":-1,
+      "last_label_index_test":-1
+   },
+   {
+      "username":"admin4",
+      "last_label_index_final":-1,
+      "last_label_index_test":1
+   }
+]

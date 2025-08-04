@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>词频比较柱状图</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="wordFrequencyChart" width="800" height="400"></canvas>
+    <script>
+        const data1 = [
+            { word: "眼睛", count: 417 },
+            { word: "医生", count: 194 },
+            { word: "元", count: 172 },
+            { word: "药店", count: 121 },
+            { word: "白内障", count: 117 },
+            { word: "营养", count: 116 },
+            { word: "红血丝", count: 114 },
+            { word: "老花眼", count: 108 },
+            { word: "青光眼", count: 106 },
+            { word: "周期", count: 97 },
+            { word: "感冒灵", count: 94 },
+            { word: "敏感肌", count: 75 },
+            { word: "眼镜", count: 69 },
+            { word: "飞蚊症", count: 56 },
+            { word: "老花镜", count: 49 },
+            { word: "手术", count: 41 },
+            { word: "问题", count: 37 },
+            { word: "吸收", count: 17 },
+            { word: "转化", count: 12 },
+            { word: "兰蔻", count: 10 },
+            { word: "发货", count: 10 },
+            { word: "雅诗兰黛", count: 9 },
+            { word: "九十九元", count: 6 },
+            { word: "汗", count: 6 },
+            { word: "皮炎平", count: 5 },
+            { word: "大几千元", count: 5 },
+            { word: "畏光", count: 3 },
+            { word: "大几百元", count: 3 },
+            { word: "痘肌", count: 2 },
+            { word: "钱", count: 2 },
+            { word: "解决", count: 2 },
+            { word: "一百元", count: 1 },
+            { word: "小飞蚊", count: 1 },
+            { word: "双十一", count: 1 },
+            { word: "双十二", count: 1 },
+            { word: "清光眼", count: 1 },
+            { word: "老花镜。", count: 1 },
+            { word: "天猫", count: 1 },
+            { word: "感冒", count: 1 },
+            { word: "敏感", count: 1 },
+            { word: "免疫细胞", count: 1 },
+            { word: "迎风泪", count: 1 },
+            { word: "红血丝 ", count: 1 },
+            { word: "防伪二维码", count: 1 },
+            { word: "肚子肠道", count: 1 },
+            { word: "大几百百元", count: 1 },
+            { word: "变化", count: 1 },
+            { word: "白内障吗", count: 1 },
+            { word: "白褂褂", count: 1 },
+            { word: "推荐", count: 1 }
+        ];
+
+        const data2 = [
+            { word: "问题", count: 789 },
+            { word: "眼睛", count: 580 },
+            { word: "推荐", count: 317 },
+            { word: "营养", count: 196 },
+            { word: "元", count: 176 },
+            { word: "医生", count: 172 },
+            { word: "发货", count: 124 },
+            { word: "敏感肌", count: 114 },
+            { word: "药店", count: 109 },
+            { word: "红血丝", count: 106 },
+            { word: "痘肌", count: 105 },
+            { word: "白内障", count: 104 },
+            { word: "老花眼", count: 98 },
+            { word: "周期", count: 94 },
+            { word: "青光眼", count: 94 },
+            { word: "感冒灵", count: 82 },
+            { word: "汗", count: 63 },
+            { word: "解决", count: 61 },
+            { word: "眼镜", count: 60 },
+            { word: "飞蚊症", count: 52 },
+            { word: "老花镜", count: 43 },
+            { word: "手术", count: 36 },
+            { word: "畏光", count: 31 },
+            { word: "吸收", count: 25 },
+            { word: "双十一", count: 21 },
+            { word: "转化", count: 13 },
+            { word: "兰蔻", count: 8 },
+            { word: "雅诗兰黛", count: 7 },
+            { word: "九十九元", count: 6 },
+            { word: "迎风泪", count: 4 },
+            { word: "天猫", count: 4 },
+            { word: "皮炎平", count: 4 },
+            { word: "大几千元", count: 4 },
+            { word: "免疫细胞", count: 3 },
+            { word: "钱", count: 2 },
+            { word: "一百元", count: 1 },
+            { word: "小飞蚊", count: 1 },
+            { word: "双十二", count: 1 },
+            { word: "清光眼", count: 1 },
+            { word: "老花镜。", count: 1 },
+            { word: "感冒", count: 1 },
+            { word: "敏感", count: 1 },
+            { word: "肚子肠道", count: 1 },
+            { word: "大几百百元", count: 1 },
+            { word: "变化", count: 1 },
+            { word: "白内障吗", count: 1 },
+            { word: "大几百元", count: 1 },
+            { word: "白褂褂", count: 1 }
+        ];
+
+        const labels = data1.map(item => item.word);
+        const values1 = data1.map(item => item.count);
+        const values2 = labels.map(label => {
+            const found = data2.find(item => item.word === label);
+            return found ? found.count : 0;
+        });
+
+        const ctx = document.getElementById('wordFrequencyChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '人工标注',
+                        data: values1,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '人工标注+数据增强',
+                        data: values2,
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

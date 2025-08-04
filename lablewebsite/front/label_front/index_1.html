@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/video-js.min.css"/>
+    <script src="src/axios.js"></script>
+    <script type="text/javascript" src="src/video.min.js"></script>
+    <script type="text/javascript" src="src/vue-video-player.js"></script>
+    <script src="//unpkg.com/element-ui@2.15.14/lib/index.js"></script>
+    <script type="text/javascript" src="src/xlsx.js"></script>
+    <title>变体词标注</title>
+</head>
+<body>
+    
+    <div id="app">
+
+        
+        <el-container>
+            <el-header>
+            </el-header>
+            <el-main>
+                <el-row>
+                    <el-col :span="2">
+                        <div style="height: 10px;">&nbsp;</div>
+                    
+                    </el-col>
+                    <el-col :span="8">
+                      <!-- <el-progress :percentage="percentage" :color="customColor"></el-progress> -->
+                        <el-row>
+                            <video-player class="vjs-custom-skin"
+                            ref="videoPlayer"
+                            :options="playerOptions"
+                            :playsinline="true"
+                            @play="onPlayerPlay($event)"
+                            @pause="onPlayerPause($event)"
+                            @ended="onPlayerEnded($event)"
+                            @loadeddata="onPlayerLoadeddata($event)"
+                            @waiting="onPlayerWaiting($event)"
+                            @playing="onPlayerPlaying($event)"
+                            @timeupdate="onPlayerTimeupdate($event)"
+                            @canplay="onPlayerCanplay($event)"
+                            @canplaythrough="onPlayerCanplaythrough($event)"
+                            @ready="playerReadied"
+                            @statechanged="playerStateChanged($event)">
+                        <video-player>
+                        </el-row>
+                        <el-row>
+                            <div style="height: 20px;">&nbsp;</div>
+                        </el-row>
+                        <el-row>
+                          <el-button type="primary" icon="el-icon-caret-left" @click="  back_operation" >查看上一个</el-button>    
+                        </el-row>
+                        <el-row>
+                          <div style="height: 20px;">&nbsp;</div>
+                          <el-progress type="circle" :percentage="((this.index / 6000).toFixed(2))*100"></el-progress>
+                        </el-row>
+        
+                           
+                    </el-col>
+                    <el-col :span="12">  
+                        <el-form :model="formData" label-position="top" label-width="100px">
+                            <!-- <el-form-item label="LLM label result">
+                              <el-input type="textarea" v-model="this.llm_label" placeholder="请输入文本" :disabled="true"></el-input>
+                            </el-form-item> -->
+                           
+                            <!-- <el-form-item>
+                              <el-button type="primary" @click="processText">处理文本</el-button>
+                            </el-form-item> -->
+                        </el-form>
+                  
+                          <div v-for="(sentence, index) in sentences" :key="index">
+                            <p>{{ index + 1 }}.{{ sentence }}</p>
+                            <el-input v-model="userInputs[index]" placeholder="变体词：原词 / 无"></el-input>
+                          </div>
+                          <div style="height: 20px;">&nbsp;</div>
+                          <el-button type="primary" icon="el-icon-upload" @click=" send_data">提交</el-button>
+                          
+                       
+                    </el-col>
+                    <el-col :span="2">
+                        <div style="height: 10px;">&nbsp;</div>
+                    
+                    </el-col>
+                </el-row>
+            </el-main>
+            <el-footer>
+            </el-footer>
+            
+        
+        </el-container>
+        <!-- <p>{{message}}</p> -->
+    
+      
+    </div>
+    
+</body>
+<link rel="stylesheet" href="./element/element.css">
+<script src="./element/vue.js"></script>
+<script src="./element/element.js"></script>
+<script>
+    Vue.use(window.VueVideoPlayer)
+    new Vue({
+        el:"#app",
+        data:{
+        username:sessionStorage.getItem("username"),
+          index:sessionStorage.getItem("label_index"),
+          video_path:"D:\\xftp_download\\downloads\\抖音直播\\999柚美保健品专卖店\\999柚美保健品专卖店_2024-04-02_21-56-39_000.mp4",
+          llm_label:sessionStorage.getItem("label_label"),
+       
+  
+            inputText: sessionStorage.getItem("label_asrresult"),
+            label:"无",
+            name:"",
+            temp_test:"",
+            sentences: [],
+            userInputs: [],
+            formData: {},
+        // videojs options
+            playerOptions: {
+                height: '500',
+                autoplay: false,
+                muted: false,
+                language: 'zh',
+                playbackRates: [0.7, 1.0, 1.5, 2.0],
+                sources: [{
+                    type: "video/mp4",
+            // mp4
+                    // src: "http://vjs.zencdn.net/v/oceans.mp4",
+                    src:sessionStorage.getItem("label_videopath"),
+            // webm
+            // src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
+                }],
+                poster: "https://surmon-china.github.io/vue-quill-editor/static/images/surmon-1.jpg",
+            }
+        },
+        create(){
+            // this.initVideoList();
+
+        },
+        
+        mounted() {
+          this.processText();
+            // this.excelFile = "xlsx\\llm_label_union_deepseek.xlsx";
+      // console.log('this is current player instance object', this.player)
+            setTimeout(() => {
+                console.log('dynamic change options', this.player)
+                this.player.muted(false)}, 2000)
+        },
+        computed: {
+          llm_label(){
+             return this.llm_label
+
+          },
+            player() {
+                return this.$refs.videoPlayer.player
+            }
+        },
+        methods:{
+            onPlayerPlay(player) {
+        // console.log('player play!', player)
+            },
+            onPlayerPause(player) {
+        // console.log('player pause!', player)
+            },
+            onPlayerEnded(player) {
+        // console.log('player ended!', player)
+        },
+      onPlayerLoadeddata(player) {
+        // console.log('player Loadeddata!', player)
+      },
+      onPlayerWaiting(player) {
+        // console.log('player Waiting!', player)
+      },
+      onPlayerPlaying(player) {
+        // console.log('player Playing!', player)
+      },
+      onPlayerTimeupdate(player) {
+        // console.log('player Timeupdate!', player.currentTime())
+      },
+      onPlayerCanplay(player) {
+        // console.log('player Canplay!', player)
+      },
+      onPlayerCanplaythrough(player) {
+        // console.log('player Canplaythrough!', player)
+      },
+      // or listen state event
+      playerStateChanged(playerCurrentState) {
+        // console.log('player current update state', playerCurrentState)
+      },
+      // player is ready
+      playerReadied(player) {
+        // seek to 10s
+        // console.log('example player 1 readied', player)
+        // player.currentTime(10)
+        // console.log('example 01: the player is readied', player)
+      },
+        processText() {
+          console.log("here")
+          const resentencesp = /([﹒﹔﹖﹗．；。！？]["’”」』]{0,2}|：(?=["‘“「『]{1,2}|$))/;
+          const slist = [];
+          const parts = this.inputText.split(resentencesp);
+          for (let i = 0; i < parts.length; i++) {
+              if (resentencesp.test(parts[i]) && slist.length > 0) {
+                  slist[slist.length - 1] += parts[i];
+              } else if (parts[i]) {
+                  slist.push(parts[i]);}
+          }
+
+
+    // 拆分文本为句子并保留标点符号
+        // this.sentences = this.inputText.split(regex).filter(sentence => sentence.trim() !== '');
+
+          
+      // 拆分文本为句子
+            this.sentences = slist;
+            // this.sentences = this.inputText.split(/[。！？；]+/).filter(sentence => sentence.trim() !== '');
+
+
+      // 初始化用户输入数组
+            this.userInputs = new Array(this.sentences.length).fill('');
+        },
+        send_data(){
+          axios.get("http://127.0.0.1:5000/writedata",{
+            params:{s1:this.index,s2:JSON.stringify(this.sentences),s3:JSON.stringify(this.userInputs),s4:this.video_path,s5:this.username}
+          })
+          .then((response) =>{
+            // this.playerOptions.sources.src=response.data[0];
+            // player.load()
+            this.playerOptions.sources[0].src = response.data[0]; 
+            this.video_path=response.data[0]// 更新视频的src
+            this.player.load(); // 重新加载视频
+            this.inputText=response.data[1];
+            this.llm_label=response.data[2];
+           
+            this.index=response.data[3];
+            this.processText();
+            alert("Sucess!")
+            
+
+          })
+          .catch((error) =>{
+            alert("Error!")
+            console.error(error);
+          })
+        },
+        back_operation(){
+          axios.get("http://49.232.199.229:200/back",{
+            params:{s1:this.username}
+          })
+          .then((response) =>{
+            // this.playerOptions.sources.src=response.data[0];
+            // player.load()
+            this.playerOptions.sources[0].src = response.data[0]; 
+            this.video_path=response.data[0]// 更新视频的src
+            this.player.load(); // 重新加载视频
+            this.inputText=response.data[1];
+            this.llm_label=response.data[2];
+           
+            this.index=response.data[3];
+            this.processText();
+            alert("Sucess!")
+            
+
+          })
+          .catch((error) =>{
+            alert("Error!")
+            console.error(error);
+          })
+
+        },
+        
+        
+//             readExcelFile() {
+//       this.readExcel(this.excelFile, (workbook) => {
+//         // 在这里处理解析后的 workbook 对象
+//         console.log("workbook",workbook);
+//       });
+//     },
+//     readExcel(file, callback) {
+//         var reader = new FileReader();
+//         reader.onload = (e) => {
+//         var data = e.target.result;
+//     var workbook = XLSX.read(data, { type: 'binary' });
+//     if (callback) {
+//       callback(workbook);
+//     }
+//   };
+
+//   // 检查 file 参数的类型
+//   if (file instanceof File) {
+//     reader.readAsBinaryString(file);
+//   } else {
+//     console.error('File parameter is not a valid File object.');
+//   }
+// }
+        }
+    })
+    
+
+
+</script>
+</html>
