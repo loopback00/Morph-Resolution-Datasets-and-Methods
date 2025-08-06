@@ -82,14 +82,13 @@ Please note that the annotators have already been trained. -->
 The annotation website we use consists of a front-end (Vue) and a back-end (Flask), which can be found at **labelwebsite**. We provide a short video to demonstrate the specific annotation process.
 **Please note that the annotators have already been trained.**
 
- <div style="text-align: center;">
-  <iframe width="560" height="315"
-          src="https://www.youtube.com/embed/OBbo5ZwJBlk"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-  </iframe>
+<div align="center">
+
+[![Watch the video](https://img.youtube.com/vi/OBbo5ZwJBlk/hqdefault.jpg)](https://www.youtube.com/watch?v=OBbo5ZwJBlk)
+
 </div>
+
+<!-- [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/aJpaQB-ylks/0.jpg)](https://youtu.be/R_epYJPtquU) -->
 
 ## 🗄 Health AMR and General AMR
 
