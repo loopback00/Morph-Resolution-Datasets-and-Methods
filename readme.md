@@ -58,11 +58,11 @@ Please note that the annotators have already been trained. -->
 
 ---
 
-# 📰 What's New
+<!-- # 📰 What's New
 
 - [2025/8/3] 🚀 We reannotate health AMR and extend AMR dataset to general domain. Proposed JointMER and CDRF, two state-of-the-art morph resolution methods!
 
-- [2025/3/1] 🚀 [Chinese Morph Resolution in E-commerce Live Streaming Scenarios](https://aclanthology.org/2025.naacl-industry.32.pdf) was accepted by NAACL Industry Track!
+- [2025/3/1] 🚀 [Chinese Morph Resolution in E-commerce Live Streaming Scenarios](https://aclanthology.org/2025.naacl-industry.32.pdf) was accepted by NAACL Industry Track! -->
 
 # Contents
 
