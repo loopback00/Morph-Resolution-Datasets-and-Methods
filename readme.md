@@ -83,8 +83,6 @@ The dataset include health and general amr, which can be found at **dataset**.
 
 ## ✨ Methods
 
-The dataset include health and general amr, which can be found at **dataset**.
-
 ## 🛠️ Environment Setup
 
 We provide two complementary frameworks:
