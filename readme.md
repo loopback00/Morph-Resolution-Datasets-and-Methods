@@ -64,19 +64,6 @@ Please note that the annotators have already been trained. -->
 
 - [2025/3/1] 🚀 [Chinese Morph Resolution in E-commerce Live Streaming Scenarios](https://aclanthology.org/2025.naacl-industry.32.pdf) was accepted by NAACL Industry Track! -->
 
-# Contents
-
-- [📰 What's New](#-whats-new)
-- [Contents](#contents)
-- [🚀 Getting Started](#-getting-started)
-  - [Annotation Website](#webiste)
-  - [Health and General AMR](#environment-variables)
-  - [Methods](#simulation)
-    - [environment prepare](#framework-required-modules)
-    - [model checkpoint](#cli-example)
-    - [suage](#gui-example)
-- [Contact](#contact)
-
 ## 💻Data Annotate Website
 
 The annotation website we use consists of a front-end (Vue) and a back-end (Flask), which can be found at **labelwebsite**. We provide a short video to demonstrate the specific annotation process.
@@ -98,22 +85,102 @@ The dataset include health and general amr, which can be found at **dataset**.
 
 The dataset include health and general amr, which can be found at **dataset**.
 
-## Environment Variables
+## 🛠️ Environment Setup
 
-You need to export your OpenAI API key as follows：
+We provide two complementary frameworks:
+
+| Framework     | Model Examples   | Use Case                                                       |
+| ------------- | ---------------- | -------------------------------------------------------------- |
+| **LLM-based** | Qwen2.5-7B, LoRA | Advanced reasoning, explanation, correction with large context |
+| **PLM-based** | Mengzi-T5, Full  | Lightweight, structured generation and inference               |
+
+Choose the appropriate pipeline based on your task complexity and computational resources.
+
+The two frameworks require separate environments due to differing dependencies (e.g., PyTorch versions, tokenizer behavior). We recommend using **isolated Conda or virtual environments** for each.
+
+### 1. LLM-Based Environment (Qwen + LoRA)
 
 ```bash
-# Export your OpenAI API key
-export OPENAI_API_KEY="your_api_key_here"
+cd LLaMA-Factory-main
+pip install -e ".[torch,metrics]" --no-build-isolation
 ```
 
-If you want use Azure OpenAI services, please export your Azure OpenAI key and OpenAI API base as follows：
+### 2. PLM-Based Environment (Mengzi-T5)
 
 ```bash
-export AZURE_OPENAI_API_KEY="your_api_key_here"
-export AZURE_OPENAI_API_BASE="your_api_base_here"
+cd LIVEAMR
+pip install -e
 ```
 
-# Contact
+## Model Download
 
-Project Creation: zjh2001@qq.com
+The following models are fine-tuned for **Chinese AMR tasks**, specifically **morph resolution** (variant word correction) and **morph explanation**. All models are released by [`dawang123`](https://huggingface.co/dawang123) on Hugging Face.
+
+### Model List
+
+| Model Name                      | Base Model               | Model Type         | Task Focus                     | Adapter Only | Hugging Face Link                                                         |
+| ------------------------------- | ------------------------ | ------------------ | ------------------------------ | ------------ | ------------------------------------------------------------------------- |
+| `t5-chineseAMR-base-multitask`  | Langboat/mengzi-t5-base  | T5 Encoder-Decoder | Morph Resolution & Explanation | Yes          | [👉 Link](https://huggingface.co/dawang123/t5-chineseAMR-base-multitask)  |
+| `qwen-7b-chineseAMR-multitask`  | Qwen/Qwen2-5-7B-Instruct | Causal LM (LLM)    | Morph Resolution & Explanation | Yes          | [👉 Link](https://huggingface.co/dawang123/qwen-7b-chineseAMR-multitask)  |
+| `llama-8b-chineseAMR-multitask` | meta-llama/Llama-3.1-8B  | Causal LM (LLM)    | Morph Resolution & Explanation | Yes          | [👉 Link](https://huggingface.co/dawang123/llama-8b-chineseAMR-multitask) |
+
+> 🔹 **Note**: The Llama and Qwen models are **LoRA adapters** and must be used with their corresponding base models.  
+> 🔹 The T5 model is a full fine-tuned checkpoint.
+
+---
+
+## Usage Examples
+
+### 1. T5 Model (Efficient, suitable for structured generation)
+
+```python
+from transformers import T5Tokenizer, T5ForConditionalGeneration
+
+model_path = "dawang123/t5-chineseAMR-base-multitask"
+tokenizer = T5Tokenizer.from_pretrained("Langboat/mengzi-t5-base", legacy=False)
+model = T5ForConditionalGeneration.from_pretrained(model_path, device_map="auto")
+
+input_text = "小糖人都是可以吃的。"
+inputs = tokenizer(input_text, return_tensors="pt", max_length=512, truncation=True).to(model.device)
+outputs = model.generate(inputs["input_ids"], max_length=128)
+generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+print("Input:", input_text)
+print("Output:", generated_text)
+```
+
+---
+
+### 2. Qwen Model (Instruction-tuned LLM with chat support)
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
+
+# Load base model and tokenizer
+base_model_path = "Qwen/Qwen2-5-7B-Instruct"  # or your local path
+adapter_path = "dawang123/qwen-7b-chineseAMR-multitask"
+
+tokenizer = AutoTokenizer.from_pretrained(base_model_path)
+model = AutoModelForCausalLM.from_pretrained(base_model_path, device_map="auto")
+model = PeftModel.from_pretrained(model, adapter_path, device_map="auto")
+
+# Input text with variant words
+input_text = "小糖人都是可以吃的。"
+instruction = "Please restore the variant words in the following sentence. Note: only modify the variant words, and keep other content (including potential speech recognition errors) unchanged."
+
+# Format as chat template
+messages = [
+    {"role": "user", "content": f"{instruction}\n{input_text}"}
+]
+prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+
+# Generate
+outputs = model.generate(**inputs, max_new_tokens=128)
+response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+generated_text = response.split("assistant")[-1].strip()
+
+print("Input:", input_text)
+print("Output:", generated_text)
+```
