@@ -165,7 +165,7 @@ model = PeftModel.from_pretrained(model, adapter_path, device_map="auto")
 
 # Input text with variant words
 input_text = "小糖人都是可以吃的。"
-instruction = "Please restore the variant words in the following sentence. Note: only modify the variant words, and keep other content (including potential speech recognition errors) unchanged."
+instruction = "请将以下句子中的变体词进行还原。注意，只修改变体词，其他内容（包括可能的语音识别错误）保持不变。"
 
 # Format as chat template
 messages = [
